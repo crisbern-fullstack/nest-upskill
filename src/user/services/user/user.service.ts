@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
 import { Repository } from 'typeorm';
-import { CreateUserType } from 'src/utils/types';
-import { HttpException } from '@nestjs/common/exceptions';
-import { HttpStatus } from '@nestjs/common/enums';
+import { CreateUserType, UpdateUserType } from 'src/utils/types';
 
 @Injectable()
 export class UserService {
@@ -12,7 +10,9 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  fetchUsers() {}
+  fetchUsers() {
+    return this.userRepository.find();
+  }
 
   createUser(userDetails: CreateUserType): Promise<any> {
     try {
@@ -25,5 +25,13 @@ export class UserService {
     } catch (err) {
       console.log('ehh');
     }
+  }
+
+  updateUser(id: number, userDetails: UpdateUserType): Promise<any> {
+    return this.userRepository.update({ id }, { ...userDetails });
+  }
+
+  deleteUser(id: number) {
+    return this.userRepository.delete({ id });
   }
 }

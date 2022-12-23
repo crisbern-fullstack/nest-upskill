@@ -14,7 +14,7 @@ import { User } from './typeorm/entities/User';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'root',
+      password: 'admin',
       database: 'nest_upskill',
       entities: [User],
       synchronize: true,

@@ -5,12 +5,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Delete,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common/enums';
-import { HttpException } from '@nestjs/common/exceptions';
+import { Put } from '@nestjs/common/decorators';
 import { CreateUserDto } from 'src/user/dtos/CreateUser.dto';
+import { UpdateUserDto } from 'src/user/dtos/UpdateUser.dto';
 import { UserService } from 'src/user/services/user/user.service';
 
 @Controller('user')
@@ -18,18 +19,15 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  getUsers() {
-    return this.userService.fetchUsers();
+  async getUsers() {
+    const users = await this.userService.fetchUsers();
+    return users;
   }
 
   @Post('')
   @UsePipes(new ValidationPipe())
   createUser(@Body() userData: CreateUserDto) {
-    try {
-      return this.userService.createUser(userData);
-    } catch (err) {
-      return new HttpException(err, HttpStatus.BAD_REQUEST);
-    }
+    return this.userService.createUser(userData);
   }
 
   @Get(':id')
@@ -37,5 +35,24 @@ export class UserController {
     console.log(id);
 
     return id;
+  }
+
+  @Put(':id')
+  async updateUserById(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const updatedUser = await this.userService.updateUser(id, updateUserDto);
+
+    const responseData = updatedUser.raw?.[0];
+
+    return responseData;
+  }
+
+  @Delete(':id')
+  async deleteUserById(@Param('id', ParseIntPipe) id: number) {
+    const deletedUser = await this.userService.deleteUser(id);
+
+    return deletedUser;
   }
 }
